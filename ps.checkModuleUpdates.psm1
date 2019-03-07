@@ -1,4 +1,4 @@
-function Check-ModuleUpdates {
+function Get-ModuleUpdates {
 	<#
 	.Synopsis
 		Check powershell modules for updates
@@ -42,7 +42,7 @@ function Check-ModuleUpdates {
 		Will create scheduled task to run the script every Friday at 5am. SchedTask will be created for powershell edition, the command was ran from
 	#>
 	[CmdletBinding()]
-	[Alias("cmu")]
+	[Alias("cmu","Check-ModuleUpdates")]
 	param([switch]$update,[switch]$all,[switch]$sendToast,[switch]$createSchedTask,$module="",$skipUpdate="",$schedTaskScriptPath="",[switch]$allowPrerelease)
 	
 	begin {
