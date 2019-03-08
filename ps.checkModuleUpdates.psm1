@@ -48,7 +48,7 @@ function Get-ModuleUpdates {
 	begin {
 		$exclude="excludePermanetSomethingIfNeeded"
 		[string[]]$changelist=""
-		$schedTaskScriptPath=$psScriptRoot+"\"+$PSCmdlet.MyInvocation.MyCommand.Name+".ps1"
+		# $schedTaskScriptPath=$psScriptRoot+"\"+$PSCmdlet.MyInvocation.MyCommand.Name+".ps1"
 		
 		# Set toast
 		[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
@@ -61,7 +61,8 @@ function Get-ModuleUpdates {
 	Process {
 		# Create sched task
 		if ($createSchedTask) {
-			$actionArgCommandString="-command . $SchedTaskScriptPath; Check-ModuleUpdates -all -sendToast"
+			# $actionArgCommandString="-command . $SchedTaskScriptPath; Check-ModuleUpdates -all -sendToast"
+			$actionArgCommandString="-command import-module ps.checkModuleUpdates; Check-ModuleUpdates -all -sendToast"
 			if ($PSVersionTable.PSEdition -eq "Core") {
 				$splatNewSchT=@{
 					Execute="pwsh"
