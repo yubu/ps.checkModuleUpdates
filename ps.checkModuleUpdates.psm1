@@ -75,7 +75,6 @@ function Get-ModuleUpdates {
 	begin {
 		$exclude="excludePermanetSomethingIfNeeded"
 		[string[]]$changelist=""
-		# $schedTaskScriptPath=$psScriptRoot+"\"+$PSCmdlet.MyInvocation.MyCommand.Name+".ps1"
 		
 		# Set toast
 		[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
@@ -94,8 +93,7 @@ function Get-ModuleUpdates {
 			catch {$_.Exception}
 		}
 
-		# compact.exe /s /c $env:USERPROFILE\.ps.checkModuleUpdate\
-		if ($compressTranscriptDir) {compact.exe /s /c $env:USERPROFILE\.ps.checkModuleUpdate\}
+		if ($compressTranscriptDir) {compact.exe /s /c $env:USERPROFILE\.ps.checkModuleUpdate\; break}
 	}
 
 	Process {
