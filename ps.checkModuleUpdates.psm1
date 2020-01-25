@@ -41,6 +41,9 @@ function Get-ModuleUpdates {
 		cmu -getLastUpdateCommand | iex
 		Run latest module update command 
 	.Example
+		cmu (gmo ps.check*)
+		Will check for updates (gmo ps.check*) modules
+	.Example
 		Check-ModuleUpdates -all -update -skipUpdate "PSReadLine|PSWindowsUpdate"
 		Will update all modules available except modules PSReadLine and PSWindowsUpdate
 	.Example
@@ -58,6 +61,14 @@ function Get-ModuleUpdates {
 	.Example
 		cmu -compressTranscriptDir 
 		Will set compression attribute to log/transcript directory ($env:USERPROFILE\.ps.checkModuleUpdate)
+	.Example
+		cmu "aws|psreadline" -getModuleAllVersions | ? count -gt 1
+		Get-InstalledModule AWSPowerShell -AllVersions | ? version -notmatch "version1|version2" | Uninstall-Module -force -AllowPrerelease
+		Get the list of all installed module versions and then uninstall the older ones except two latest versions
+	.Example
+		Start-ThreadJob {Get-InstalledModule VMware.VimAutomation.Srm -AllVersions  | ? version -NotMatch 1.5.0.14899557 | Uninstall-Module -force}
+		Get-Job | Receive-Job -Keep
+		Remove old module versions and then check job results
 	#>
 	[CmdletBinding()]
 	[Alias("cmu","Check-ModuleUpdates")]
@@ -69,7 +80,7 @@ function Get-ModuleUpdates {
 		[Parameter(Mandatory=$False,ValueFromPipeline=$False,ValueFromPipelineByPropertyName=$False)][string][ValidateSet("AllUsers","CurrentUser")]$Scope="AllUsers",
 		[Parameter(Mandatory=$False,ValueFromPipeline=$False,ValueFromPipelineByPropertyName=$False)][string][ValidateSet("AllUsers","CurrentUser")]$ScopeCore="CurrentUser",
 		[switch]$update, [switch]$all, [switch]$sendToast, [switch]$createSchedTask, [switch]$createSchedTaskWithTranscript, [switch]$allowPrerelease, [switch]$skipScan, [switch]$getLastUpdateCommand,
-		[switch]$compressTranscriptDir
+		[switch]$compressTranscriptDir, [switch]$getModuleAllVersions
 	)
 	
 	begin {
@@ -98,6 +109,8 @@ function Get-ModuleUpdates {
 
 	Process {
 		if (!$module -and $skipScan) {Write-Host "ERROR: No module names provided for update. Run command with no -skipScan!" -f Red; return}
+
+		if ($getModuleAllVersions) {get-module -ListAvailable | ? name -match $module | select ModuleType,Version,Name,PSEdition,path | group name | sort count -desc | select count -ExpandProperty group | select count,name,version,path | sort count,name,version,path; return}
 
 		# Create sched task
 		if ($createSchedTask) {

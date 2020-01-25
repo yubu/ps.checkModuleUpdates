@@ -74,3 +74,14 @@ Then you can run the update command on modules of your choice:
 cmu -allowPrerelease -all -update "module1|module2|module3"
 cmu -getLastUpdateCommand | iex
 ```
+##### Delete multiple old module versions
+```powershell
+.Example
+    cmu "aws|psreadline" -getModuleAllVersions | ? count -gt 1
+    Get-InstalledModule AWSPowerShell -AllVersions | ? version -notmatch "version1|version2" | Uninstall-Module -force -AllowPrerelease
+    Get the list of all installed module versions and then uninstall the older ones except two latest versions
+.Example
+    Start-ThreadJob {Get-InstalledModule VMware.VimAutomation.Srm -AllVersions  | ? version -NotMatch 1.5.0.14899557 | Uninstall-Module -force}
+    Get-Job | Receive-Job -Keep
+    Remove old module versions and then check job results
+```
